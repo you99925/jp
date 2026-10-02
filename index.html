@@ -136,7 +136,7 @@ const grammar = [
 const key="jp50_v3";
 let state=JSON.parse(localStorage.getItem(key)||"null")||{
 date:"",dailyDone:0,dailyCorrect:0,streak:0,lastStudy:"",
-totalQ:0,totalCorrect:0,wrong:[],learnedWords:[],settings:{voice:true}
+totalQ:0,totalCorrect:0,wrong:[],learnedWords:[],favoritesWords:[],settings:{voice:true}
 };
 function save(){localStorage.setItem(key,JSON.stringify(state))}
 function today(){return new Date().toISOString().slice(0,10)}
@@ -145,14 +145,14 @@ function hash(n){let x=Math.sin(n*12.9898)*43758.5453;return x-Math.floor(x)}
 function dailyWord(){return words[dayIndex()%words.length]}
 function speak(t){if(!state.settings.voice)return;try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang="ja-JP";u.rate=.82;speechSynthesis.speak(u)}catch(e){}}
 function setupDay(){let d=today();if(state.date!==d){state.date=d;state.dailyDone=0;state.dailyCorrect=0; if(state.lastStudy){let a=new Date(state.lastStudy),b=new Date(d);let diff=Math.round((b-a)/86400000);if(diff===1)state.streak++;else if(diff>1)state.streak=1}else state.streak=1;save()}}
-setupDay();
+if(!Array.isArray(state.favoritesWords))state.favoritesWords=[]; setupDay();
 
 function renderHome(){
  const w=dailyWord(), pct=Math.min(100,state.dailyDone/20*100);
  document.getElementById("home").innerHTML=`
  <div class="hero"><div class="date">${today()}　今日學習　｜　v3.2</div><h2>每天 10～15 分鐘</h2><p>假名 → 發音 → 單字 → 簡單文法</p></div>
  <div class="card"><div class="row"><div><b>今日進度</b><div class="note">${state.dailyDone} / 20 題</div></div><span class="pill">${Math.round(pct)}%</span></div><div class="progress"><i style="width:${pct}%"></i></div><button class="primary" onclick="startDaily()">開始今日 20 題</button></div>
- <div class="grid2"><div class="stat"><b>${state.dailyCorrect}</b><span>今日答對</span></div><div class="stat"><b>${state.streak}</b><span>連續學習天數</span></div><div class="stat"><b>${state.totalCorrect}</b><span>累積答對</span></div><div class="stat"><b>${state.wrong.length}</b><span>待複習錯題</span></div></div>
+ <div class="grid2"><div class="stat"><b>${state.dailyCorrect}</b><span>今日答對</span></div><div class="stat"><b>${state.streak}</b><span>連續學習天數</span></div><div class="stat"><b>${state.totalCorrect}</b><span>累積答對</span></div><div class="stat"><b>${state.wrong.length}</b><span>待複習錯題</span></div><div class="stat"><b>${state.favoritesWords.length}</b><span>收藏單字</span></div></div>
  <div class="card"><span class="pill">今日單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button></div>
  <div class="card"><b>今天學什麼？</b><div class="note" style="margin-top:7px">每天會依日期自動換一組單字、例句與練習題。資料存在你的手機瀏覽器，不需要登入。</div></div>
  `;
@@ -177,13 +177,19 @@ function clearCanvas(){let c=document.getElementById("draw");if(c)c.getContext("
 function showDrawAnswer(){let k=document.getElementById("drawKana").value;document.getElementById("drawAns").textContent=`答案：${k}（${kana.find(x=>x[0]===k)[2]}）`;speak(k)}
 
 let practice={type:"romaji",idx:0,score:0,answered:false,items:[],daily:false};
-function shuffle(a,seed=1){return [...a].sort((x,y)=>hash(seed+(x[0]?.charCodeAt(0)||0))-.5)}
+function shuffle(a,seed=Date.now()){
+ let out=[...a];
+ let r=seed>>>0;
+ const rand=()=>{r=(r*1664525+1013904223)>>>0;return r/4294967296};
+ for(let i=out.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[out[i],out[j]]=[out[j],out[i]]}
+ return out;
+}
 function makeDaily(){
  let items=[];
  for(let i=0;i<20;i++){let kind=i%5;let idx=(dayIndex()*7+i*13)%kana.length;items.push({kind,k: kana[idx]})}
  return items;
 }
-function startDaily(){practice={type:"daily",idx:0,score:0,answered:false,items:shuffle(makeDaily(),Date.now()),daily:true};showView("practiceView");renderPractice()}
+function startDaily(){practice={type:"daily",idx:0,score:0,answered:false,items:shuffle(makeDaily(),Date.now() ^ Math.floor(Math.random()*0xFFFFFFFF)),daily:true};showView("practiceView");renderPractice()}
 function startPractice(type){let items;if(type==="romaji")items=kana.map((k,i)=>({kind:0,k}));else if(type==="convert")items=kana.map((k,i)=>({kind:1,k}));else if(type==="listen")items=kana.map((k,i)=>({kind:2,k}));else if(type==="word")items=words.map((w,i)=>({kind:3,w}));else items=grammar.map((g,i)=>({kind:4,g}));practice={type,idx:0,score:0,answered:false,items:shuffle(items,dayIndex())};showView("practiceView");renderPractice()}
 function addResult(correct,item){
  state.totalQ++; if(correct)state.totalCorrect++;
@@ -202,7 +208,7 @@ function renderPractice(){
  if(item.kind===2){body=`<div class="question">?</div><div class="subquestion">先聽發音，再選出假名</div><button class="secondary" onclick="speak('${item.k[0]}')">🔊 播放</button><div class="options" style="margin-top:10px">${optionSet(item.k[0],kana.map(k=>k[0])).map(x=>`<button class="opt" onclick="choose('${x}','${item.k[0]}')">${x}</button>`).join("")}</div>`}
  if(item.kind===3){let correct=item.w[2],opts=optionSet(correct,words.map(w=>w[2]));body=`<div class="question" style="font-size:44px">${item.w[1]}</div><div class="subquestion">${item.w[0]}</div><div class="options">${opts.map(x=>`<button class="opt" onclick="choose('${x.replaceAll("'","")}','${correct.replaceAll("'","")}')">${x}</button>`).join("")}</div>`}
  if(item.kind===4){let correct=item.g[0],opts=optionSet(correct,grammar.map(g=>g[0]));body=`<div class="question" style="font-size:44px">＿</div><div class="subquestion">${item.g[2]}<br>${item.g[3]}<br><span class="pill">請選助詞</span></div><div class="options">${opts.map(x=>`<button class="opt" onclick="choose('${x}','${correct}')">${x}</button>`).join("")}</div>`}
- document.getElementById("practiceView").innerHTML=`<div class="card"><div class="row"><b>${title}</b><span class="pill">答對 ${practice.score}</span></div>${body}<div id="feedback" class="feedback"></div><button id="nextBtn" class="secondary" style="display:none" onclick="nextPractice()">下一題</button></div>`;
+ document.getElementById("practiceView").innerHTML=`<div class="card"><div class="row"><b>${title}</b><span class="pill">答對 ${practice.score}</span></div>${body}<div id="feedback" class="feedback"></div><button id="nextBtn" class="secondary" style="display:none" onclick="nextPractice()">下一題</button><button class="secondary" onclick="resetCurrentPractice()">↻ 重置題目・重新亂數</button></div>`;
  if(item.kind===0)setTimeout(()=>document.getElementById("ans")?.focus(),50);
 }
 function checkRomaji(){let item=practice.items[practice.idx],ans=(document.getElementById("ans").value||"").trim().toLowerCase(),correct=ans===item.k[2];finishQuestion(correct,item)}
@@ -214,10 +220,48 @@ function finishQuestion(correct,item){
  document.querySelectorAll(".opt").forEach(b=>{if(b.textContent.trim()===(item.k?(item.kind===1?(practice.idx%2===0?item.k[1]:item.k[0]):item.k[0]):item.w?item.w[2]:item.g[0]))b.classList.add("correct")});
  document.getElementById("nextBtn").style.display="block";
 }
+function resetCurrentPractice(){
+ let items;
+ if(practice.daily){
+   items=makeDaily();
+   practice={type:"daily",idx:0,score:0,answered:false,items:shuffle(items,Date.now() ^ Math.floor(Math.random()*0xFFFFFFFF)),daily:true};
+ }else{
+   let type=practice.type;
+   if(type==="romaji")items=kana.map(k=>({kind:0,k}));
+   else if(type==="convert")items=kana.map(k=>({kind:1,k}));
+   else if(type==="listen")items=kana.map(k=>({kind:2,k}));
+   else if(type==="word")items=words.map(w=>({kind:3,w}));
+   else if(type==="grammar")items=grammar.map(g=>({kind:4,g}));
+   else if(type==="review"){items=practice.items}
+   practice={type,idx:0,score:0,answered:false,items:shuffle(items,Date.now() ^ Math.floor(Math.random()*0xFFFFFFFF)),daily:false};
+ }
+ renderPractice();
+}
 function nextPractice(){practice.idx++;practice.answered=false;renderPractice()}
 function renderPracticeDone(){document.getElementById("practiceView").innerHTML=`<div class="card" style="text-align:center"><div class="question" style="font-size:44px">完成</div><p>本次答對 <b>${practice.score}</b> / ${practice.items.length}</p>${practice.daily?`<p>今天進度：${state.dailyDone}/20</p>`:""}<button class="primary" onclick="startDaily()">再做一次今日練習</button><button class="secondary" onclick="showView('home')">回首頁</button></div>`;renderHome()}
+let currentRandomWord=null;
+function randomWord(){
+ const pool=words.filter(w=>w[0]!==currentRandomWord);
+ currentRandomWord=pool[Math.floor(Math.random()*pool.length)][0];
+ renderRandomWord();
+}
+function toggleFavorite(id){
+ const i=state.favoritesWords.indexOf(id);
+ if(i>=0)state.favoritesWords.splice(i,1);else state.favoritesWords.push(id);
+ save();
+ if(currentRandomWord)renderRandomWord();
+ else renderWords();
+}
+function renderRandomWord(){
+ const id=currentRandomWord;
+ const w=words.find(x=>x[0]===id);
+ if(!w){currentRandomWord=null;renderWords();return}
+ const fav=state.favoritesWords.includes(w[0]);
+ document.getElementById("wordsView").innerHTML=`<div class="tabs"><button onclick="renderWords()">今日</button><button class="on">隨機單字</button><button onclick="startPractice('word')">單字測驗</button><button onclick="startPractice('grammar')">文法測驗</button></div><div class="card"><span class="pill">隨機單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[0]}')">🔊 聽單字</button><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button><button class="${fav?"primary":"secondary"}" onclick="toggleFavorite('${w[0]}')">${fav?"★ 已收藏":"☆ 收藏單字"}</button><button class="secondary" onclick="randomWord()">↻ 再換一個</button></div><div class="card"><b>收藏單字　(${state.favoritesWords.length})</b>${state.favoritesWords.length?state.favoritesWords.map(id=>{let x=words.find(q=>q[0]===id);return x?`<div class="listitem"><b>${x[1]}</b>　${x[0]}　<span class="note">${x[2]}</span><button class="secondary" onclick="speak('${x[0]}')">🔊</button><button class="danger" onclick="toggleFavorite('${x[0]}')">取消收藏</button></div>`:""}).join(""):`<div class="empty">還沒有收藏單字</div>`}</div>`;
+}
 function renderWords(){
- let w=dailyWord();document.getElementById("wordsView").innerHTML=`<div class="tabs"><button class="on">今日</button><button onclick="startPractice('word')">單字測驗</button><button onclick="startPractice('grammar')">文法測驗</button></div><div class="card"><span class="pill">每日單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[0]}')">🔊 聽單字</button><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button></div><div class="card"><b>今日文法</b><div class="listitem"><b>${grammar[dayIndex()%grammar.length][0]}</b>　${grammar[dayIndex()%grammar.length][1]}<br>${grammar[dayIndex()%grammar.length][2]}<br><span class="note">${grammar[dayIndex()%grammar.length][4]}</span></div></div><div class="card"><b>N5 單字庫</b>${words.slice(0,30).map(w=>`<div class="listitem"><b>${w[1]}</b>　${w[0]}　<span class="note">${w[2]}</span><button class="secondary" onclick="speak('${w[0]}')">🔊</button></div>`).join("")}</div><div class="card"><b>錯題複習</b><p class="note">答錯的題目會保留在這台裝置，之後可重新練習。</p><button class="primary" onclick="reviewWrong()">開始錯題複習（${state.wrong.length}）</button></div><div class="card"><button class="danger" onclick="resetAll()">清除本機學習紀錄</button></div>`}
+ let w=dailyWord();let fav=state.favoritesWords.includes(w[0]);
+ document.getElementById("wordsView").innerHTML=`<div class="tabs"><button class="on">今日</button><button onclick="randomWord()">隨機單字</button><button onclick="startPractice('word')">單字測驗</button><button onclick="startPractice('grammar')">文法測驗</button></div><div class="card"><span class="pill">今日單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[0]}')">🔊 聽單字</button><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button><button class="${fav?"primary":"secondary"}" onclick="toggleFavorite('${w[0]}')">${fav?"★ 已收藏":"☆ 收藏單字"}</button><button class="secondary" onclick="randomWord()">↻ 隨機換一個單字</button></div><div class="card"><b>今日文法</b><div class="listitem"><b>${grammar[dayIndex()%grammar.length][0]}</b>　${grammar[dayIndex()%grammar.length][1]}<br>${grammar[dayIndex()%grammar.length][2]}<br><span class="note">${grammar[dayIndex()%grammar.length][4]}</span></div></div><div class="card"><b>N5 單字庫</b>${words.slice(0,30).map(w=>`<div class="listitem"><b>${w[1]}</b>　${w[0]}　<span class="note">${w[2]}</span><button class="secondary" onclick="speak('${w[0]}')">🔊</button></div>`).join("")}</div><div class="card"><b>錯題複習</b><p class="note">答錯的題目會保留在這台裝置，之後可重新練習。</p><button class="primary" onclick="reviewWrong()">開始錯題複習（${state.wrong.length}）</button></div><div class="card"><button class="danger" onclick="resetAll()">清除本機學習紀錄</button></div>`}
 function reviewWrong(){if(!state.wrong.length){alert("目前沒有錯題。");return}let items=[];for(let id of state.wrong){let [kind,key]=id.split(":");if(kind==="0"||kind==="1"||kind==="2"){let k=kana.find(x=>x[0]===key);if(k)items.push({kind:+kind,k})}else if(kind==="3"){let w=words.find(x=>x[0]===key);if(w)items.push({kind:3,w})}else{let g=grammar.find(x=>x[0]===key);if(g)items.push({kind:4,g})}}if(!items.length){alert("錯題資料已不存在。");return}practice={type:"review",idx:0,score:0,answered:false,items};showView("practiceView");renderPractice()}
 function resetAll(){if(confirm("確定要清除所有學習紀錄嗎？")){localStorage.removeItem(key);location.reload()}}
 function showView(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.view===id));if(id==="home")renderHome();if(id==="kanaView")renderKana();if(id==="wordsView")renderWords();if(id==="practiceView"&&!practice.items.length)startDaily()}
