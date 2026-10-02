@@ -32,7 +32,7 @@ main{padding:14px}.view{display:none}.view.active{display:block}.card{background
 </head>
 <body>
 <div class="app">
-<header class="top"><h1>日語 50 音 <span style="font-size:12px;color:#697586;font-weight:600">v3.2</span></h1><small id="topSub">每天 20 題，從假名到 N5</small></header>
+<header class="top"><h1>日語 50 音 <span style="font-size:12px;color:#697586;font-weight:600">v3.4</span></h1><small id="topSub">每天 20 題，從假名到 N5</small></header>
 <main>
 <section id="home" class="view active"></section>
 <section id="kanaView" class="view"></section>
@@ -136,7 +136,7 @@ const grammar = [
 const key="jp50_v3";
 let state=JSON.parse(localStorage.getItem(key)||"null")||{
 date:"",dailyDone:0,dailyCorrect:0,streak:0,lastStudy:"",
-totalQ:0,totalCorrect:0,wrong:[],learnedWords:[],favoritesWords:[],settings:{voice:true}
+totalQ:0,totalCorrect:0,wrong:[],learnedWords:[],favoritesWords:[],settings:{voice:true,showReading:true,showMeaning:true,showExampleMeaning:true}
 };
 function save(){localStorage.setItem(key,JSON.stringify(state))}
 function today(){return new Date().toISOString().slice(0,10)}
@@ -145,16 +145,41 @@ function hash(n){let x=Math.sin(n*12.9898)*43758.5453;return x-Math.floor(x)}
 function dailyWord(){return words[dayIndex()%words.length]}
 function speak(t){if(!state.settings.voice)return;try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang="ja-JP";u.rate=.82;speechSynthesis.speak(u)}catch(e){}}
 function setupDay(){let d=today();if(state.date!==d){state.date=d;state.dailyDone=0;state.dailyCorrect=0; if(state.lastStudy){let a=new Date(state.lastStudy),b=new Date(d);let diff=Math.round((b-a)/86400000);if(diff===1)state.streak++;else if(diff>1)state.streak=1}else state.streak=1;save()}}
-if(!Array.isArray(state.favoritesWords))state.favoritesWords=[]; setupDay();
+if(!Array.isArray(state.favoritesWords))state.favoritesWords=[];
+if(!state.settings)state.settings={};
+if(typeof state.settings.showReading!=="boolean")state.settings.showReading=true;
+if(typeof state.settings.showMeaning!=="boolean")state.settings.showMeaning=true;
+if(typeof state.settings.showExampleMeaning!=="boolean")state.settings.showExampleMeaning=true;
+setupDay();
 
+function toggleDisplaySetting(key,value){
+ state.settings[key]=value;save();renderHome();renderWords();
+}
+function grammarForWord(w){
+ const s=w[3];
+ if(s.includes("を")) return "「を」是受詞助詞，放在動作直接作用的對象後面。例：水を飲みます，就是「喝水」。";
+ if(s.includes("が")) return "「が」是主語助詞，常用來指出誰／什麼是句子的主體或新資訊。";
+ if(s.includes("は")) return "「は」是主題助詞，指出這句話主要在談誰或什麼。";
+ if(s.includes("に")) return "「に」常表示目的地或時間點。例：学校に行きます，就是「去學校」。";
+ if(s.includes("で")) return "「で」表示動作發生的場所。例：図書館で読みます，就是「在圖書館讀書」。";
+ if(s.includes("へ")) return "「へ」表示移動方向，讀作「え」。例：日本へ行きます，就是「去日本」。";
+ if(s.includes("の")) return "「の」連接兩個名詞，常表示所屬。例：わたしの本，就是「我的書」。";
+ return "先注意句尾的「です／ます」：這是初級日文常見的禮貌句型。";
+}
+function displaySettingsHtml(){
+ return `<div class="card"><b>顯示設定</b><p class="note">可先遮住中文與假名提示，自己回想後再勾回來。</p>
+ <label class="row" style="justify-content:space-between;padding:8px 0"><span>顯示假名讀音</span><input type="checkbox" ${state.settings.showReading?"checked":""} onchange="toggleDisplaySetting('showReading',this.checked)" style="width:22px;height:22px;flex:0 0 auto"></label>
+ <label class="row" style="justify-content:space-between;padding:8px 0"><span>顯示中文意思</span><input type="checkbox" ${state.settings.showMeaning?"checked":""} onchange="toggleDisplaySetting('showMeaning',this.checked)" style="width:22px;height:22px;flex:0 0 auto"></label>
+ <label class="row" style="justify-content:space-between;padding:8px 0"><span>顯示例句中文</span><input type="checkbox" ${state.settings.showExampleMeaning?"checked":""} onchange="toggleDisplaySetting('showExampleMeaning',this.checked)" style="width:22px;height:22px;flex:0 0 auto"></label></div>`;
+}
 function renderHome(){
  const w=dailyWord(), pct=Math.min(100,state.dailyDone/20*100);
  document.getElementById("home").innerHTML=`
- <div class="hero"><div class="date">${today()}　今日學習　｜　v3.2</div><h2>每天 10～15 分鐘</h2><p>假名 → 發音 → 單字 → 簡單文法</p></div>
+ <div class="hero"><div class="date">${today()}　今日學習　｜　v3.4</div><h2>每天 10～15 分鐘</h2><p>假名 → 發音 → 單字 → 簡單文法</p></div>
  <div class="card"><div class="row"><div><b>今日進度</b><div class="note">${state.dailyDone} / 20 題</div></div><span class="pill">${Math.round(pct)}%</span></div><div class="progress"><i style="width:${pct}%"></i></div><button class="primary" onclick="startDaily()">開始今日 20 題</button></div>
  <div class="grid2"><div class="stat"><b>${state.dailyCorrect}</b><span>今日答對</span></div><div class="stat"><b>${state.streak}</b><span>連續學習天數</span></div><div class="stat"><b>${state.totalCorrect}</b><span>累積答對</span></div><div class="stat"><b>${state.wrong.length}</b><span>待複習錯題</span></div><div class="stat"><b>${state.favoritesWords.length}</b><span>收藏單字</span></div></div>
  <div class="card"><span class="pill">今日單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button></div>
- <div class="card"><b>今天學什麼？</b><div class="note" style="margin-top:7px">每天會依日期自動換一組單字、例句與練習題。資料存在你的手機瀏覽器，不需要登入。</div></div>
+ ${displaySettingsHtml()}<div class="card"><b>今天學什麼？</b><div class="note" style="margin-top:7px">每天會依日期自動換一組單字、例句與練習題。資料存在你的手機瀏覽器，不需要登入。</div></div>
  `;
 }
 function renderKana(){
@@ -257,11 +282,23 @@ function renderRandomWord(){
  const w=words.find(x=>x[0]===id);
  if(!w){currentRandomWord=null;renderWords();return}
  const fav=state.favoritesWords.includes(w[0]);
- document.getElementById("wordsView").innerHTML=`<div class="tabs"><button onclick="renderWords()">今日</button><button class="on">隨機單字</button><button onclick="startPractice('word')">單字測驗</button><button onclick="startPractice('grammar')">文法測驗</button></div><div class="card"><span class="pill">隨機單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[0]}')">🔊 聽單字</button><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button><button class="${fav?"primary":"secondary"}" onclick="toggleFavorite('${w[0]}')">${fav?"★ 已收藏":"☆ 收藏單字"}</button><button class="secondary" onclick="randomWord()">↻ 再換一個</button></div><div class="card"><b>收藏單字　(${state.favoritesWords.length})</b>${state.favoritesWords.length?state.favoritesWords.map(id=>{let x=words.find(q=>q[0]===id);return x?`<div class="listitem"><b>${x[1]}</b>　${x[0]}　<span class="note">${x[2]}</span><button class="secondary" onclick="speak('${x[0]}')">🔊</button><button class="danger" onclick="toggleFavorite('${x[0]}')">取消收藏</button></div>`:""}).join(""):`<div class="empty">還沒有收藏單字</div>`}</div>`;
+ const grammarNote=grammarForWord(w);
+ const grammarCard=(state.settings.showMeaning||state.settings.showExampleMeaning)?`<div class="card"><span class="pill">簡易文法教學</span><div class="listitem"><b>這句話怎麼看？</b><br>${grammarNote}</div></div>`:"";
+ document.getElementById("wordsView").innerHTML=`<div class="tabs"><button onclick="renderWords()">今日</button><button class="on">隨機單字</button><button onclick="startPractice('word')">單字測驗</button><button onclick="startPractice('grammar')">文法測驗</button></div>
+ <div class="card"><span class="pill">隨機單字</span><div class="word-big">${w[1]}</div>${state.settings.showReading?`<div class="reading">${w[0]}</div>`:""}${state.settings.showMeaning?`<div class="meaning">${w[2]}</div>`:""}<div class="example"><b>${w[3]}</b>${state.settings.showExampleMeaning?`<br>${w[4]}`:""}</div><button class="secondary" onclick="speak('${w[0]}')">🔊 聽單字</button><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button><button class="${fav?"primary":"secondary"}" onclick="toggleFavorite('${w[0]}')">${fav?"★ 已收藏":"☆ 收藏單字"}</button><button class="secondary" onclick="randomWord()">↻ 再換一個</button></div>${grammarCard}${displaySettingsHtml()}
+ <div class="card"><b>收藏單字　(${state.favoritesWords.length})</b>${state.favoritesWords.length?state.favoritesWords.map(id=>{let x=words.find(q=>q[0]===id);return x?`<div class="listitem"><b>${x[1]}</b>${state.settings.showReading?`　${x[0]}`:""}${state.settings.showMeaning?`　<span class="note">${x[2]}</span>`:""}<button class="secondary" onclick="speak('${x[0]}')">🔊</button><button class="danger" onclick="toggleFavorite('${x[0]}')">取消收藏</button></div>`:""}).join(""):`<div class="empty">還沒有收藏單字</div>`}</div>`;
 }
 function renderWords(){
- let w=dailyWord();let fav=state.favoritesWords.includes(w[0]);
- document.getElementById("wordsView").innerHTML=`<div class="tabs"><button class="on">今日</button><button onclick="randomWord()">隨機單字</button><button onclick="startPractice('word')">單字測驗</button><button onclick="startPractice('grammar')">文法測驗</button></div><div class="card"><span class="pill">今日單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[0]}')">🔊 聽單字</button><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button><button class="${fav?"primary":"secondary"}" onclick="toggleFavorite('${w[0]}')">${fav?"★ 已收藏":"☆ 收藏單字"}</button><button class="secondary" onclick="randomWord()">↻ 隨機換一個單字</button></div><div class="card"><b>今日文法</b><div class="listitem"><b>${grammar[dayIndex()%grammar.length][0]}</b>　${grammar[dayIndex()%grammar.length][1]}<br>${grammar[dayIndex()%grammar.length][2]}<br><span class="note">${grammar[dayIndex()%grammar.length][4]}</span></div></div><div class="card"><b>N5 單字庫</b>${words.slice(0,30).map(w=>`<div class="listitem"><b>${w[1]}</b>　${w[0]}　<span class="note">${w[2]}</span><button class="secondary" onclick="speak('${w[0]}')">🔊</button></div>`).join("")}</div><div class="card"><b>錯題複習</b><p class="note">答錯的題目會保留在這台裝置，之後可重新練習。</p><button class="primary" onclick="reviewWrong()">開始錯題複習（${state.wrong.length}）</button></div><div class="card"><button class="danger" onclick="resetAll()">清除本機學習紀錄</button></div>`}
+ let w=dailyWord();
+ const fav=state.favoritesWords.includes(w[0]);
+ const grammarNote=grammarForWord(w);
+ const grammarCard=(state.settings.showMeaning||state.settings.showExampleMeaning)?`<div class="card"><span class="pill">簡易文法教學</span><div class="listitem"><b>這句話怎麼看？</b><br>${grammarNote}</div></div>`:"";
+ document.getElementById("wordsView").innerHTML=`<div class="tabs"><button class="on">今日</button><button onclick="randomWord()">隨機單字</button><button onclick="startPractice('word')">單字測驗</button><button onclick="startPractice('grammar')">文法測驗</button></div>
+ <div class="card"><span class="pill">今日單字</span><div class="word-big">${w[1]}</div>${state.settings.showReading?`<div class="reading">${w[0]}</div>`:""}${state.settings.showMeaning?`<div class="meaning">${w[2]}</div>`:""}<div class="example"><b>${w[3]}</b>${state.settings.showExampleMeaning?`<br>${w[4]}`:""}</div><button class="secondary" onclick="speak('${w[0]}')">🔊 聽單字</button><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button><button class="${fav?"primary":"secondary"}" onclick="toggleFavorite('${w[0]}')">${fav?"★ 已收藏":"☆ 收藏單字"}</button><button class="secondary" onclick="randomWord()">↻ 隨機換一個</button></div>${grammarCard}${displaySettingsHtml()}
+ <div class="card"><b>N5 單字庫</b>${words.slice(0,30).map(x=>`<div class="listitem"><b>${x[1]}</b>${state.settings.showReading?`　${x[0]}`:""}${state.settings.showMeaning?`　<span class="note">${x[2]}</span>`:""}<button class="secondary" onclick="speak('${x[0]}')">🔊</button><button class="${state.favoritesWords.includes(x[0])?"primary":"secondary"}" onclick="toggleFavorite('${x[0]}')">${state.favoritesWords.includes(x[0])?"★":"☆"}</button></div>`).join("")}</div>
+ <div class="card"><b>收藏單字　(${state.favoritesWords.length})</b>${state.favoritesWords.length?state.favoritesWords.map(id=>{let x=words.find(q=>q[0]===id);return x?`<div class="listitem"><b>${x[1]}</b>${state.settings.showReading?`　${x[0]}`:""}${state.settings.showMeaning?`　<span class="note">${x[2]}</span>`:""}<button class="secondary" onclick="speak('${x[0]}')">🔊</button><button class="danger" onclick="toggleFavorite('${x[0]}')">取消收藏</button></div>`:""}).join(""):`<div class="empty">還沒有收藏單字</div>`}</div>
+ <div class="card"><b>錯題複習</b><p class="note">答錯的題目會保留在這台裝置，之後可重新練習。</p><button class="primary" onclick="reviewWrong()">開始錯題複習（${state.wrong.length}）</button></div><div class="card"><button class="danger" onclick="resetAll()">清除本機學習紀錄</button></div>`;
+}
 function reviewWrong(){if(!state.wrong.length){alert("目前沒有錯題。");return}let items=[];for(let id of state.wrong){let [kind,key]=id.split(":");if(kind==="0"||kind==="1"||kind==="2"){let k=kana.find(x=>x[0]===key);if(k)items.push({kind:+kind,k})}else if(kind==="3"){let w=words.find(x=>x[0]===key);if(w)items.push({kind:3,w})}else{let g=grammar.find(x=>x[0]===key);if(g)items.push({kind:4,g})}}if(!items.length){alert("錯題資料已不存在。");return}practice={type:"review",idx:0,score:0,answered:false,items};showView("practiceView");renderPractice()}
 function resetAll(){if(confirm("確定要清除所有學習紀錄嗎？")){localStorage.removeItem(key);location.reload()}}
 function showView(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.view===id));if(id==="home")renderHome();if(id==="kanaView")renderKana();if(id==="wordsView")renderWords();if(id==="practiceView"&&!practice.items.length)startDaily()}
