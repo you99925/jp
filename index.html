@@ -32,7 +32,7 @@ main{padding:14px}.view{display:none}.view.active{display:block}.card{background
 </head>
 <body>
 <div class="app">
-<header class="top"><h1>日語 50 音</h1><small id="topSub">每天 20 題，從假名到 N5</small></header>
+<header class="top"><h1>日語 50 音 <span style="font-size:12px;color:#697586;font-weight:600">v3.2</span></h1><small id="topSub">每天 20 題，從假名到 N5</small></header>
 <main>
 <section id="home" class="view active"></section>
 <section id="kanaView" class="view"></section>
@@ -150,7 +150,7 @@ setupDay();
 function renderHome(){
  const w=dailyWord(), pct=Math.min(100,state.dailyDone/20*100);
  document.getElementById("home").innerHTML=`
- <div class="hero"><div class="date">${today()}　今日學習</div><h2>每天 10～15 分鐘</h2><p>假名 → 發音 → 單字 → 簡單文法</p></div>
+ <div class="hero"><div class="date">${today()}　今日學習　｜　v3.2</div><h2>每天 10～15 分鐘</h2><p>假名 → 發音 → 單字 → 簡單文法</p></div>
  <div class="card"><div class="row"><div><b>今日進度</b><div class="note">${state.dailyDone} / 20 題</div></div><span class="pill">${Math.round(pct)}%</span></div><div class="progress"><i style="width:${pct}%"></i></div><button class="primary" onclick="startDaily()">開始今日 20 題</button></div>
  <div class="grid2"><div class="stat"><b>${state.dailyCorrect}</b><span>今日答對</span></div><div class="stat"><b>${state.streak}</b><span>連續學習天數</span></div><div class="stat"><b>${state.totalCorrect}</b><span>累積答對</span></div><div class="stat"><b>${state.wrong.length}</b><span>待複習錯題</span></div></div>
  <div class="card"><span class="pill">今日單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button></div>
@@ -183,7 +183,7 @@ function makeDaily(){
  for(let i=0;i<20;i++){let kind=i%5;let idx=(dayIndex()*7+i*13)%kana.length;items.push({kind,k: kana[idx]})}
  return items;
 }
-function startDaily(){practice={type:"daily",idx:0,score:0,answered:false,items:makeDaily(),daily:true};showView("practiceView");renderPractice()}
+function startDaily(){practice={type:"daily",idx:0,score:0,answered:false,items:shuffle(makeDaily(),Date.now()),daily:true};showView("practiceView");renderPractice()}
 function startPractice(type){let items;if(type==="romaji")items=kana.map((k,i)=>({kind:0,k}));else if(type==="convert")items=kana.map((k,i)=>({kind:1,k}));else if(type==="listen")items=kana.map((k,i)=>({kind:2,k}));else if(type==="word")items=words.map((w,i)=>({kind:3,w}));else items=grammar.map((g,i)=>({kind:4,g}));practice={type,idx:0,score:0,answered:false,items:shuffle(items,dayIndex())};showView("practiceView");renderPractice()}
 function addResult(correct,item){
  state.totalQ++; if(correct)state.totalCorrect++;
@@ -221,7 +221,10 @@ function renderWords(){
 function reviewWrong(){if(!state.wrong.length){alert("目前沒有錯題。");return}let items=[];for(let id of state.wrong){let [kind,key]=id.split(":");if(kind==="0"||kind==="1"||kind==="2"){let k=kana.find(x=>x[0]===key);if(k)items.push({kind:+kind,k})}else if(kind==="3"){let w=words.find(x=>x[0]===key);if(w)items.push({kind:3,w})}else{let g=grammar.find(x=>x[0]===key);if(g)items.push({kind:4,g})}}if(!items.length){alert("錯題資料已不存在。");return}practice={type:"review",idx:0,score:0,answered:false,items};showView("practiceView");renderPractice()}
 function resetAll(){if(confirm("確定要清除所有學習紀錄嗎？")){localStorage.removeItem(key);location.reload()}}
 function showView(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.view===id));if(id==="home")renderHome();if(id==="kanaView")renderKana();if(id==="wordsView")renderWords();if(id==="practiceView"&&!practice.items.length)startDaily()}
-document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>showView(b.dataset.view));
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{
+ if(b.dataset.view==="practiceView"){startDaily();return}
+ showView(b.dataset.view)
+});
 renderHome();renderKana();renderWords();
 
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
