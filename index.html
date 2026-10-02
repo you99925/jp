@@ -2,137 +2,52 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#f8fafc">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>日語50音學習</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="日語50音與N5每日練習">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png">
+<title>日語50音｜每日練習</title>
 <style>
-:root{--blue:#2563eb;--dark:#172033;--bg:#f6f8fc;--line:#e5e7eb}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--dark);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
-button,input{font:inherit}button{border:0}
-.app{max-width:720px;margin:auto;min-height:100vh;padding-bottom:82px}
-header{padding:18px 18px 14px;background:#fff;border-bottom:1px solid var(--line)}
-header h1{font-size:24px;margin:0 0 4px}header p{margin:0;color:#64748b;font-size:13px}
-main{padding:12px}
-.page{display:none}.page.active{display:block}
-.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px #00000008}
-.card h2{font-size:18px;margin:0 0 12px}
-.hero{background:linear-gradient(135deg,#eff6ff,#fff);border-radius:18px;padding:20px;margin-bottom:12px}
-.big{font-size:72px;font-weight:700;line-height:1;text-align:center;margin:8px 0}
-.romaji{text-align:center;color:var(--blue);font-size:25px;font-weight:700}
-.speak{display:block;margin:14px auto 0;background:var(--blue);color:#fff;border-radius:13px;padding:12px 22px;font-weight:700}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#f8fafc;border-radius:14px;padding:14px}.stat b{display:block;font-size:25px}.stat span{font-size:12px;color:#64748b}
-.progress{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:var(--blue);width:0}
-.kanaGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
-.kanaBtn{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:9px 3px;min-height:65px}
-.kanaBtn:active,.action:active,.choice:active{transform:scale(.96);background:#dbeafe}
-.kanaBtn b{display:block;font-size:24px}.kanaBtn small{color:#64748b;font-size:11px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.tab{padding:11px;border-radius:11px;background:#e8eef7;color:#334155;font-weight:600}.tab.on{background:var(--blue);color:#fff}
-.action{width:100%;padding:13px;border-radius:12px;background:#eef2ff;color:#1d4ed8;font-weight:700;margin-top:8px}
-input{width:100%;border:1px solid #cbd5e1;border-radius:13px;padding:14px;font-size:20px;text-align:center;outline:none}
-input:focus{border-color:var(--blue)}
-.result{text-align:center;font-weight:700;min-height:25px;padding-top:9px}.ok{color:#15803d}.bad{color:#b91c1c}
-.choiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.choice{padding:15px;border-radius:12px;background:#f1f5f9;font-size:17px}
-.item{padding:12px 0;border-bottom:1px solid #eef2f7}.item:last-child{border:0}.itemTop{display:flex;justify-content:space-between;gap:10px}.item b{font-size:19px}.sub{font-size:13px;color:#64748b;margin-top:3px}.miniSpeak{background:#e8eef7;border-radius:9px;padding:8px 10px}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:7px max(8px,env(safe-area-inset-left)) max(7px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);z-index:10;max-width:720px;margin:auto}
-.bottom button{background:none;color:#64748b;font-size:11px;padding:6px 2px}.bottom button strong{display:block;font-size:21px;line-height:22px}.bottom button.on{color:var(--blue)}
-.note{font-size:12px;color:#64748b;line-height:1.6}
+:root{--bg:#f5f6f8;--card:#fff;--text:#18202a;--muted:#697586;--line:#e5e7eb;--accent:#111827;--ok:#087443;--bad:#b42318;--soft:#eef2f6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;padding-bottom:78px}
+button,input{font:inherit}button{border:0;cursor:pointer}.app{max-width:760px;margin:auto}.top{position:sticky;top:0;z-index:5;background:rgba(245,246,248,.94);backdrop-filter:blur(10px);padding:14px 16px 10px;border-bottom:1px solid var(--line)}.top h1{font-size:20px;margin:0}.top small{color:var(--muted)}
+main{padding:14px}.view{display:none}.view.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.hero{background:#111827;color:#fff;border-radius:20px;padding:18px}.hero .date{opacity:.75;font-size:13px}.hero h2{margin:6px 0 4px;font-size:24px}.hero p{margin:0;opacity:.85}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:var(--soft);border-radius:14px;padding:13px}.stat b{display:block;font-size:23px}.stat span{font-size:12px;color:var(--muted)}
+.progress{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:10px 0}.progress i{display:block;height:100%;background:#111827;border-radius:99px;width:0}
+.primary,.secondary,.danger{width:100%;padding:12px 14px;border-radius:12px;margin-top:8px;font-weight:700}.primary{background:#111827;color:#fff}.secondary{background:var(--soft);color:var(--text)}.danger{background:#fef0f0;color:var(--bad)}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:var(--soft);font-size:12px;color:var(--muted)}
+.kana-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.kana{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center}.kana strong{font-size:25px;display:block}.kana small{color:var(--muted)}
+.tabs{display:flex;gap:6px;overflow:auto;margin-bottom:12px}.tabs button{white-space:nowrap;padding:9px 12px;border-radius:999px;background:#e9edf2}.tabs button.on{background:#111827;color:#fff}
+.question{font-size:62px;text-align:center;font-weight:800;margin:16px 0 6px}.subquestion{text-align:center;color:var(--muted);margin-bottom:15px}.options{display:grid;grid-template-columns:1fr 1fr;gap:9px}.opt{padding:14px;border:1px solid var(--line);background:#fff;border-radius:13px;min-height:50px}.opt.correct{background:#e9f7ef;border-color:#73c69a;color:var(--ok)}.opt.wrong{background:#fff0f0;border-color:#e59a9a;color:var(--bad)}
+.feedback{min-height:24px;text-align:center;font-weight:700;margin:12px 0}.input{width:100%;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff;outline:none}.input:focus{border-color:#111827}
+.word-big{text-align:center;font-size:36px;font-weight:800}.reading{text-align:center;color:var(--muted);font-size:18px}.meaning{text-align:center;font-size:20px;margin:8px 0}.example{background:var(--soft);padding:12px;border-radius:12px;margin-top:10px}.example b{font-size:18px}
+.listitem{padding:12px 0;border-bottom:1px solid var(--line)}.listitem:last-child{border-bottom:0}
+.bottom{position:fixed;bottom:0;left:0;right:0;z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:7px max(8px,env(safe-area-inset-left)) calc(7px + env(safe-area-inset-bottom));display:flex;justify-content:center}.bottom .nav{width:min(760px,100%);display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.nav button{background:none;color:#687385;padding:7px 3px;border-radius:10px;font-size:12px}.nav button.on{background:#eef1f4;color:#111827;font-weight:700}.nav .ico{font-size:19px;display:block;margin-bottom:1px}
+.canvas-wrap{display:flex;justify-content:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:8px}.draw{width:280px;height:280px;touch-action:none;background:#fff;border-radius:8px}
+.note{color:var(--muted);font-size:13px;line-height:1.55}.empty{color:var(--muted);text-align:center;padding:18px}
+@media(max-width:390px){.question{font-size:54px}.kana-grid{gap:5px}.kana{padding:8px 2px}.kana strong{font-size:22px}}
 </style>
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"></head>
+</head>
 <body>
 <div class="app">
-<header><h1>日語 50 音</h1><p>每天 10 分鐘，從假名開始</p></header>
-
+<header class="top"><h1>日語 50 音</h1><small id="topSub">每天 20 題，從假名到 N5</small></header>
 <main>
-<section id="home" class="page active">
-<div class="card">
-<h2>今日學習</h2>
-<div class="stats">
-<div class="stat"><b id="todayDone">0</b><span>今日答對</span></div>
-<div class="stat"><b id="streak">1</b><span>連續學習天數</span></div>
-</div>
-<div style="margin:14px 0 6px" class="note">今日目標 20 題</div>
-<div class="progress"><i id="homeProgress"></i></div>
-<button class="action" onclick="go('practice')">開始今日複習</button>
-</div>
-<div class="card">
-<h2>今日單字</h2><div id="dailyWord"></div>
-</div>
-<div class="card">
-<h2>學習內容</h2>
-<div class="choiceGrid">
-<button class="choice" onclick="go('kana')">50音表</button>
-<button class="choice" onclick="go('words')">N5單字</button>
-<button class="choice" onclick="go('sentences')">簡單例句</button>
-<button class="choice" onclick="go('convert')">假名轉換</button>
-</div>
-</div>
-</section>
-
-<section id="kana" class="page">
-<div class="card">
-<h2>50音</h2>
-<div class="tabs"><button id="htab" class="tab on" onclick="kanaMode('h')">平假名</button><button id="ktab" class="tab" onclick="kanaMode('k')">片假名</button></div>
-<p class="note">點擊假名即可播放日文發音。</p>
-<div id="kanaGrid" class="kanaGrid"></div>
-</div>
-<div class="card"><h2>學習提示</h2><p class="note">先熟悉「あいうえお」，再依序學か行、さ行、た行。看到假名時先念出聲，再看羅馬拼音確認。</p></div>
-</section>
-
-<section id="practice" class="page">
-<div class="card">
-<h2>羅馬拼音練習</h2>
-<div class="hero"><div id="practiceKana" class="big">あ</div><div id="practiceRomaji" class="romaji">?</div><button class="speak" onclick="speak(practice.k)">🔊 聽發音</button></div>
-<input id="ans" placeholder="輸入 romaji" autocomplete="off" autocorrect="off" spellcheck="false">
-<div id="answerResult" class="result"></div>
-<button class="action" onclick="answer()">確認答案</button>
-<button class="action" onclick="nextQuestion()" style="background:#f1f5f9;color:#334155">下一題</button>
-</div>
-<div class="card">
-<h2>本次練習</h2><div class="stats"><div class="stat"><b id="pCorrect">0</b><span>答對</span></div><div class="stat"><b id="pCount">0</b><span>作答</span></div></div>
-</div>
-</section>
-
-<section id="words" class="page">
-<div class="card"><h2>N5 基礎單字</h2><div id="wordList"></div></div>
-</section>
-
-<section id="sentences" class="page">
-<div class="card"><h2>簡單例句</h2><div id="sentenceList"></div></div>
-</section>
-
-<section id="convert" class="page">
-<div class="card">
-<h2>平假名 → 片假名</h2>
-<p class="note">看到平假名，從 4 個選項中選出對應的片假名。</p>
-<div class="hero">
-<div id="convQuestion" class="big">あ</div>
-<div class="romaji" id="convRomaji">a</div>
-</div>
-<div id="convChoices" class="choiceGrid"></div>
-<div id="convResult" class="result"></div>
-<button class="action" onclick="nextConvert()">下一題</button>
-</div>
-<div class="card">
-<h2>片假名 → 平假名</h2>
-<p class="note">也可以反過來練習。</p>
-<div class="tabs"><button id="convHT" class="tab on" onclick="setConvMode('h2k')">平假 → 片假</button><button id="convKT" class="tab" onclick="setConvMode('k2h')">片假 → 平假</button></div>
-</div>
-</section>
+<section id="home" class="view active"></section>
+<section id="kanaView" class="view"></section>
+<section id="practiceView" class="view"></section>
+<section id="wordsView" class="view"></section>
 </main>
-
-<nav class="bottom">
-<button data-page="home" class="on" onclick="go('home')"><strong>⌂</strong>首頁</button>
-<button data-page="kana" onclick="go('kana')"><strong>あ</strong>50音</button>
-<button data-page="practice" onclick="go('practice')"><strong>✓</strong>練習</button>
-<button data-page="words" onclick="go('words')"><strong>文</strong>單字</button>
-</nav>
+<nav class="bottom"><div class="nav">
+<button data-view="home" class="on"><span class="ico">⌂</span>首頁</button>
+<button data-view="kanaView"><span class="ico">あ</span>50音</button>
+<button data-view="practiceView"><span class="ico">✓</span>練習</button>
+<button data-view="wordsView"><span class="ico">文</span>單字</button>
+</div></nav>
 </div>
-
 <script>
-const K=[
+const kana = [
 ["あ","ア","a"],["い","イ","i"],["う","ウ","u"],["え","エ","e"],["お","オ","o"],
 ["か","カ","ka"],["き","キ","ki"],["く","ク","ku"],["け","ケ","ke"],["こ","コ","ko"],
 ["さ","サ","sa"],["し","シ","shi"],["す","ス","su"],["せ","セ","se"],["そ","ソ","so"],
@@ -144,85 +59,172 @@ const K=[
 ["ら","ラ","ra"],["り","リ","ri"],["る","ル","ru"],["れ","レ","re"],["ろ","ロ","ro"],
 ["わ","ワ","wa"],["を","ヲ","wo"],["ん","ン","n"]
 ];
-const W=[
-["水","みず","mizu","水"],["本","ほん","hon","書／書本"],["車","くるま","kuruma","車子"],["学校","がっこう","gakkou","學校"],["病院","びょういん","byouin","醫院"],
-["猫","ねこ","neko","貓"],["犬","いぬ","inu","狗"],["先生","せんせい","sensei","老師"],["学生","がくせい","gakusei","學生"],["日本","にほん","nihon","日本"]
+const words = [
+["あさ","朝","早上","あさは やすいです。","早上很便宜。"],
+["ひる","昼","中午","ひるに ごはんを たべます。","中午吃飯。"],
+["よる","夜","晚上","よるは うちに います。","晚上在家。"],
+["みず","水","水","みずを のみます。","喝水。"],
+["おちゃ","お茶","茶","おちゃを ください。","請給我茶。"],
+["ごはん","ご飯","飯、餐","ごはんを たべます。","吃飯。"],
+["ねこ","猫","貓","ねこが います。","有一隻貓。"],
+["いぬ","犬","狗","いぬが すきです。","喜歡狗。"],
+["ほん","本","書","ほんを よみます。","讀書。"],
+["がくせい","学生","學生","わたしは がくせいです。","我是學生。"],
+["せんせい","先生","老師","せんせいは どこですか。","老師在哪裡？"],
+["がっこう","学校","學校","がっこうへ いきます。","去學校。"],
+["びょういん","病院","醫院","びょういんへ いきます。","去醫院。"],
+["としょかん","図書館","圖書館","としょかんで ほんを よみます。","在圖書館讀書。"],
+["くるま","車","車子","くるまが あります。","有車子。"],
+["でんしゃ","電車","電車","でんしゃで いきます。","搭電車去。"],
+["えき","駅","車站","えきは どこですか。","車站在哪裡？"],
+["うち","家","家","うちへ かえります。","回家。"],
+["ともだち","友達","朋友","ともだちと はなします。","和朋友聊天。"],
+["せんしゅう","先週","上週","せんしゅう いそがしかったです。","上週很忙。"],
+["きょう","今日","今天","きょうは げつようびです。","今天是星期一。"],
+["あした","明日","明天","あした いきます。","明天去。"],
+["きのう","昨日","昨天","きのう べんきょうしました。","昨天讀書了。"],
+["おおきい","大きい","大的","おおきい いえです。","是大房子。"],
+["ちいさい","小さい","小的","ちいさい ねこです。","是小貓。"],
+["たべる","食べる","吃","パンを たべます。","吃麵包。"],
+["のむ","飲む","喝","みずを のみます。","喝水。"],
+["みる","見る","看","テレビを みます。","看電視。"],
+["きく","聞く","聽、問","おんがくを ききます。","聽音樂。"],
+["よむ","読む","讀","ほんを よみます。","讀書。"],
+["かく","書く","寫","なまえを かきます。","寫名字。"],
+["いく","行く","去","がっこうへ いきます。","去學校。"],
+["くる","来る","來","ともだちが きます。","朋友會來。"],
+["かえる","帰る","回去","うちへ かえります。","回家。"],
+["すき","好き","喜歡","ねこが すきです。","喜歡貓。"],
+["きらい","嫌い","討厭、不喜歡","さかなが きらいです。","不喜歡魚。"],
+["いい","良い","好","これは いいです。","這個很好。"],
+["わるい","悪い","不好、壞","きょうは てんきが わるいです。","今天天氣不好。"],
+["あつい","暑い","熱的","きょうは あついです。","今天很熱。"],
+["さむい","寒い","冷的","あさは さむいです。","早上很冷。"],
+["おいしい","美味しい","好吃","この りょうりは おいしいです。","這道菜很好吃。"],
+["たかい","高い","高、貴","この ほんは たかいです。","這本書很貴。"],
+["やすい","安い","便宜","この みずは やすいです。","這水很便宜。"],
+["あたらしい","新しい","新的","あたらしい くるまです。","是新車。"],
+["ふるい","古い","舊的","ふるい ほんです。","是舊書。"],
+["はやい","早い","早、快","あさは はやいです。","早上很早。"],
+["おそい","遅い","晚、慢","でんしゃが おそいです。","電車很慢。"],
+["しごと","仕事","工作","しごとへ いきます。","去工作。"],
+["やすみ","休み","休假、休息","あしたは やすみです。","明天放假。"],
+["じかん","時間","時間","じかんが ありません。","沒有時間。"],
+["おかね","お金","錢","おかねが ありません。","沒有錢。"],
+["てんき","天気","天氣","てんきが いいです。","天氣很好。"],
+["でんわ","電話","電話","でんわを します。","打電話。"],
+["なまえ","名前","名字","なまえは なんですか。","名字是什麼？"],
+["にほん","日本","日本","にほんへ いきたいです。","想去日本。"],
+["にほんご","日本語","日文","にほんごを べんきょうします。","學日文。"],
+["えいご","英語","英文","えいごを はなします。","說英文。"],
+["せいかつ","生活","生活","にほんの せいかつです。","日本的生活。"],
+["しゃしん","写真","照片","しゃしんを とります。","拍照。"]
 ];
-const S=[
-["これは本です。","Kore wa hon desu.","這是書。","は：主題；です：禮貌句尾"],
-["水をください。","Mizu o kudasai.","請給我水。","を：動作的對象；ください：請給我…"],
-["学校へ行きます。","Gakkou e ikimasu.","去學校。","へ：移動方向；行きます：去"],
-["猫がいます。","Neko ga imasu.","有一隻貓。","が：指出主體；います：有／在（有生命物）"],
-["これは何ですか。","Kore wa nan desu ka.","這是什麼？","か：疑問；何：什麼"]
+const grammar = [
+["は","主題助詞","わたしは がくせいです。","我是學生。","は標示句子的主題。"],
+["が","主語助詞","ねこが います。","有貓。","が常用來標示主語，特別是新出現的資訊。"],
+["を","受詞助詞","みずを のみます。","喝水。","を標示動作直接作用的對象。"],
+["に","時間／目的地","がっこうに いきます。","去學校。","に可表示到達的目的地，也可表示時間點。"],
+["へ","方向","にほんへ いきます。","去日本。","へ表示移動方向，讀作 え。"],
+["で","動作場所","としょかんで よみます。","在圖書館讀。","で表示動作發生的場所。"],
+["の","所屬","わたしの ほんです。","是我的書。","の連接名詞，常表示所屬或修飾。"],
+["も","也","わたしも がくせいです。","我也是學生。","も表示「也」。"],
+["です","判斷","これは ほんです。","這是書。","です放在句尾，表示禮貌的判斷。"],
+["ください","請給我／請…","みずを ください。","請給我水。","名詞＋を＋ください可用來禮貌索取。"]
 ];
-let mode='h',practice=null,pCount=0,pCorrect=0;
-const key='jp50_'+new Date().toISOString().slice(0,10);
-let done=Number(localStorage.getItem(key)||0);
 
-function speak(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=.78;speechSynthesis.speak(u)}
-function go(id){
- document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');
- document.querySelectorAll('.bottom button').forEach(x=>x.classList.toggle('on',x.dataset.page===id));
- if(id==='practice'&&!practice)nextQuestion(); window.scrollTo({top:0,behavior:'smooth'});
+const key="jp50_v3";
+let state=JSON.parse(localStorage.getItem(key)||"null")||{
+date:"",dailyDone:0,dailyCorrect:0,streak:0,lastStudy:"",
+totalQ:0,totalCorrect:0,wrong:[],learnedWords:[],settings:{voice:true}
+};
+function save(){localStorage.setItem(key,JSON.stringify(state))}
+function today(){return new Date().toISOString().slice(0,10)}
+function dayIndex(){return Math.floor(Date.now()/86400000)}
+function hash(n){let x=Math.sin(n*12.9898)*43758.5453;return x-Math.floor(x)}
+function dailyWord(){return words[dayIndex()%words.length]}
+function speak(t){if(!state.settings.voice)return;try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang="ja-JP";u.rate=.82;speechSynthesis.speak(u)}catch(e){}}
+function setupDay(){let d=today();if(state.date!==d){state.date=d;state.dailyDone=0;state.dailyCorrect=0; if(state.lastStudy){let a=new Date(state.lastStudy),b=new Date(d);let diff=Math.round((b-a)/86400000);if(diff===1)state.streak++;else if(diff>1)state.streak=1}else state.streak=1;save()}}
+setupDay();
+
+function renderHome(){
+ const w=dailyWord(), pct=Math.min(100,state.dailyDone/20*100);
+ document.getElementById("home").innerHTML=`
+ <div class="hero"><div class="date">${today()}　今日學習</div><h2>每天 10～15 分鐘</h2><p>假名 → 發音 → 單字 → 簡單文法</p></div>
+ <div class="card"><div class="row"><div><b>今日進度</b><div class="note">${state.dailyDone} / 20 題</div></div><span class="pill">${Math.round(pct)}%</span></div><div class="progress"><i style="width:${pct}%"></i></div><button class="primary" onclick="startDaily()">開始今日 20 題</button></div>
+ <div class="grid2"><div class="stat"><b>${state.dailyCorrect}</b><span>今日答對</span></div><div class="stat"><b>${state.streak}</b><span>連續學習天數</span></div><div class="stat"><b>${state.totalCorrect}</b><span>累積答對</span></div><div class="stat"><b>${state.wrong.length}</b><span>待複習錯題</span></div></div>
+ <div class="card"><span class="pill">今日單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button></div>
+ <div class="card"><b>今天學什麼？</b><div class="note" style="margin-top:7px">每天會依日期自動換一組單字、例句與練習題。資料存在你的手機瀏覽器，不需要登入。</div></div>
+ `;
 }
-function kanaMode(m){mode=m;document.getElementById('htab').classList.toggle('on',m==='h');document.getElementById('ktab').classList.toggle('on',m==='k');renderKana()}
 function renderKana(){
- const g=document.getElementById('kanaGrid');g.innerHTML=K.map((x,i)=>{let a=mode==='h'?x[0]:x[1];return `<button class="kanaBtn" onclick="speak('${a}')"><b>${a}</b><small>${x[2]}</small></button>`}).join('');
+ let mode=window.kanaMode||"h";
+ let title=mode==="h"?"平假名":"片假名";
+ let cells=kana.map(k=>`<button class="kana" onclick="speak('${k[0]}')"><strong>${mode==="h"?k[0]:k[1]}</strong><small>${k[2]}</small></button>`).join("");
+ document.getElementById("kanaView").innerHTML=`<div class="tabs"><button class="${mode==="h"?"on":""}" onclick="window.kanaMode='h';renderKana()">平假名</button><button class="${mode==="k"?"on":""}" onclick="window.kanaMode='k';renderKana()">片假名</button></div><div class="card"><b>${title}表</b><p class="note">點假名即可播放日文發音。</p><div class="kana-grid">${cells}</div></div><div class="card"><b>書寫練習</b><p class="note">選一個假名後，在框內照著寫。這裡先練手感，不做筆順判定。</p><div class="row"><select id="drawKana" class="input">${kana.map(k=>`<option value="${k[0]}">${k[0]} / ${k[2]}</option>`).join("")}</select><button class="secondary" onclick="speak(document.getElementById('drawKana').value)">🔊</button></div><div class="canvas-wrap"><canvas id="draw" class="draw" width="560" height="560"></canvas></div><div class="row"><button class="secondary" onclick="clearCanvas()">清除</button><button class="secondary" onclick="showDrawAnswer()">看答案</button></div><div id="drawAns" class="feedback"></div></div>`;
+ setTimeout(initCanvas,0);
 }
-function nextQuestion(){
- pCount++;
- const x=K[Math.floor(Math.random()*K.length)],h=Math.random()<.5;practice={k:h?x[0]:x[1],r:x[2]};
- document.getElementById('practiceKana').textContent=practice.k;document.getElementById('practiceRomaji').textContent='?';document.getElementById('ans').value='';document.getElementById('answerResult').textContent='';document.getElementById('answerResult').className='result';document.getElementById('ans').focus();updatePractice();
+function initCanvas(){
+ const c=document.getElementById("draw"); if(!c)return; const ctx=c.getContext("2d");ctx.lineWidth=12;ctx.lineCap="round";ctx.lineJoin="round";
+ let down=false;
+ const pos=e=>{const r=c.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return [(p.clientX-r.left)*c.width/r.width,(p.clientY-r.top)*c.height/r.height]};
+ const start=e=>{e.preventDefault();down=true;let [x,y]=pos(e);ctx.beginPath();ctx.moveTo(x,y)};
+ const move=e=>{if(!down)return;e.preventDefault();let [x,y]=pos(e);ctx.lineTo(x,y);ctx.stroke()};
+ const end=()=>down=false;
+ c.onmousedown=start;c.onmousemove=move;c.onmouseup=end;c.onmouseleave=end;c.ontouchstart=start;c.ontouchmove=move;c.ontouchend=end;
 }
-function answer(){
- if(!practice)return;let v=document.getElementById('ans').value.trim().toLowerCase(),r=document.getElementById('answerResult');
- if(v===practice.r){pCorrect++;done++;localStorage.setItem(key,done);r.textContent='✓ 正確';r.className='result ok';speak(practice.k);document.getElementById('practiceRomaji').textContent=practice.r;updateHome();setTimeout(nextQuestion,650)}
- else{r.textContent='再試一次';r.className='result bad'}
- updatePractice();
-}
-function updatePractice(){document.getElementById('pCorrect').textContent=pCorrect;document.getElementById('pCount').textContent=pCount}
-function updateHome(){document.getElementById('todayDone').textContent=done;document.getElementById('homeProgress').style.width=Math.min(100,done/20*100)+'%'}
+function clearCanvas(){let c=document.getElementById("draw");if(c)c.getContext("2d").clearRect(0,0,c.width,c.height);document.getElementById("drawAns").textContent=""}
+function showDrawAnswer(){let k=document.getElementById("drawKana").value;document.getElementById("drawAns").textContent=`答案：${k}（${kana.find(x=>x[0]===k)[2]}）`;speak(k)}
 
-let convMode='h2k', convCurrent=null, convLocked=false;
-function setConvMode(m){
- convMode=m;
- document.getElementById('convHT').classList.toggle('on',m==='h2k');
- document.getElementById('convKT').classList.toggle('on',m==='k2h');
- nextConvert();
+let practice={type:"romaji",idx:0,score:0,answered:false,items:[],daily:false};
+function shuffle(a,seed=1){return [...a].sort((x,y)=>hash(seed+(x[0]?.charCodeAt(0)||0))-.5)}
+function makeDaily(){
+ let items=[];
+ for(let i=0;i<20;i++){let kind=i%5;let idx=(dayIndex()*7+i*13)%kana.length;items.push({kind,k: kana[idx]})}
+ return items;
 }
-function nextConvert(){
- convLocked=false;
- const x=K[Math.floor(Math.random()*K.length)];
- convCurrent=x;
- const source=convMode==='h2k'?x[0]:x[1];
- const correct=convMode==='h2k'?x[1]:x[0];
- document.getElementById('convQuestion').textContent=source;
- document.getElementById('convRomaji').textContent=x[2];
- document.getElementById('convResult').textContent='';
- document.getElementById('convResult').className='result';
- let pool=[correct];
- while(pool.length<4){
-   const y=K[Math.floor(Math.random()*K.length)];
-   const v=convMode==='h2k'?y[1]:y[0];
-   if(!pool.includes(v)) pool.push(v);
- }
- pool.sort(()=>Math.random()-.5);
- document.getElementById('convChoices').innerHTML=pool.map(v=>`<button class="choice" onclick="chooseConvert('${v}')">${v}</button>`).join('');
+function startDaily(){practice={type:"daily",idx:0,score:0,answered:false,items:makeDaily(),daily:true};showView("practiceView");renderPractice()}
+function startPractice(type){let items;if(type==="romaji")items=kana.map((k,i)=>({kind:0,k}));else if(type==="convert")items=kana.map((k,i)=>({kind:1,k}));else if(type==="listen")items=kana.map((k,i)=>({kind:2,k}));else if(type==="word")items=words.map((w,i)=>({kind:3,w}));else items=grammar.map((g,i)=>({kind:4,g}));practice={type,idx:0,score:0,answered:false,items:shuffle(items,dayIndex())};showView("practiceView");renderPractice()}
+function addResult(correct,item){
+ state.totalQ++; if(correct)state.totalCorrect++;
+ if(practice.daily){state.dailyDone=Math.min(20,state.dailyDone+1);if(correct)state.dailyCorrect++}
+ if(!correct){let id=item.kind+":"+(item.k?.[0]||item.w?.[0]||item.g?.[0]||"");if(!state.wrong.includes(id))state.wrong.push(id)}
+ state.lastStudy=today();save()
 }
-function chooseConvert(v){
- if(convLocked)return;
- convLocked=true;
- const correct=convMode==='h2k'?convCurrent[1]:convCurrent[0];
- const r=document.getElementById('convResult');
- if(v===correct){r.textContent='✓ 正確！';r.className='result ok';speak(correct);setTimeout(nextConvert,600)}
- else{r.textContent='✕ 不對，再試一次';r.className='result bad';convLocked=false}
+function optionSet(correct,arr){let pool=shuffle(arr,dayIndex()+practice.idx*31);let out=[];for(const x of pool){if(JSON.stringify(x)!==JSON.stringify(correct)&&out.length<3)out.push(x)}return shuffle([correct,...out],dayIndex()+practice.idx*17)}
+function renderPractice(){
+ let item=practice.items[practice.idx];
+ if(!item){renderPracticeDone();return}
+ let title=practice.daily?`今日 20 題　${practice.idx+1}/20`:(practice.type==="romaji"?"羅馬拼音":practice.type==="convert"?"假名轉換":practice.type==="listen"?"聽力":"單字／文法");
+ let body="";
+ if(item.kind===0){body=`<div class="question">${item.k[0]}</div><div class="subquestion">請輸入羅馬拼音</div><input id="ans" class="input" autocomplete="off" autocapitalize="none" placeholder="例如：shi"><button class="primary" onclick="checkRomaji()">確認</button>`}
+ if(item.kind===1){let dir=practice.idx%2===0?"平假名 → 片假名":"片假名 → 平假名";let q=dir.startsWith("平")?item.k[0]:item.k[1];let correct=dir.startsWith("平")?item.k[1]:item.k[0];let opts=optionSet(correct,kana.map(k=>dir.startsWith("平")?k[1]:k[0]));body=`<div class="question">${q}</div><div class="subquestion">${dir}　｜　${item.k[2]}</div><div class="options">${opts.map(x=>`<button class="opt" onclick="choose('${x}','${correct}')">${x}</button>`).join("")}</div>`}
+ if(item.kind===2){body=`<div class="question">?</div><div class="subquestion">先聽發音，再選出假名</div><button class="secondary" onclick="speak('${item.k[0]}')">🔊 播放</button><div class="options" style="margin-top:10px">${optionSet(item.k[0],kana.map(k=>k[0])).map(x=>`<button class="opt" onclick="choose('${x}','${item.k[0]}')">${x}</button>`).join("")}</div>`}
+ if(item.kind===3){let correct=item.w[2],opts=optionSet(correct,words.map(w=>w[2]));body=`<div class="question" style="font-size:44px">${item.w[1]}</div><div class="subquestion">${item.w[0]}</div><div class="options">${opts.map(x=>`<button class="opt" onclick="choose('${x.replaceAll("'","")}','${correct.replaceAll("'","")}')">${x}</button>`).join("")}</div>`}
+ if(item.kind===4){let correct=item.g[0],opts=optionSet(correct,grammar.map(g=>g[0]));body=`<div class="question" style="font-size:44px">＿</div><div class="subquestion">${item.g[2]}<br>${item.g[3]}<br><span class="pill">請選助詞</span></div><div class="options">${opts.map(x=>`<button class="opt" onclick="choose('${x}','${correct}')">${x}</button>`).join("")}</div>`}
+ document.getElementById("practiceView").innerHTML=`<div class="card"><div class="row"><b>${title}</b><span class="pill">答對 ${practice.score}</span></div>${body}<div id="feedback" class="feedback"></div><button id="nextBtn" class="secondary" style="display:none" onclick="nextPractice()">下一題</button></div>`;
+ if(item.kind===0)setTimeout(()=>document.getElementById("ans")?.focus(),50);
 }
-function renderWords(){document.getElementById('wordList').innerHTML=W.map(x=>`<div class="item"><div class="itemTop"><div><b>${x[0]}</b>　${x[1]}<div class="sub">${x[2]} · ${x[3]}</div></div><button class="miniSpeak" onclick="speak('${x[0]}')">🔊</button></div></div>`).join('')}
-function renderSentences(){document.getElementById('sentenceList').innerHTML=S.map(x=>`<div class="item"><div class="itemTop"><div><b>${x[0]}</b><div class="sub">${x[1]}</div><div style="margin-top:5px">${x[2]}</div><div class="sub">${x[3]}</div></div><button class="miniSpeak" onclick="speak('${x[0]}')">🔊</button></div></div>`).join('')}
-function renderDaily(){let x=W[new Date().getDate()%W.length];document.getElementById('dailyWord').innerHTML=`<div><b style="font-size:24px">${x[0]}</b>　${x[1]}</div><div class="sub">${x[2]} · ${x[3]}</div><button class="action" onclick="speak('${x[0]}')">🔊 播放發音</button>`}
-document.getElementById('ans').addEventListener('keydown',e=>{if(e.key==='Enter')answer()});
-renderKana();renderWords();renderSentences();renderDaily();updateHome();nextConvert();
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+function checkRomaji(){let item=practice.items[practice.idx],ans=(document.getElementById("ans").value||"").trim().toLowerCase(),correct=ans===item.k[2];finishQuestion(correct,item)}
+function choose(ans,correct){let item=practice.items[practice.idx];finishQuestion(ans===correct,item)}
+function finishQuestion(correct,item){
+ if(practice.answered)return;practice.answered=true;if(correct)practice.score++;
+ addResult(correct,item);
+ let f=document.getElementById("feedback");f.textContent=correct?"答對":"再試一次，答案是："+(item.k?item.k[2]:item.w?item.w[2]:item.g?item.g[0]:"");f.style.color=correct?"var(--ok)":"var(--bad)";
+ document.querySelectorAll(".opt").forEach(b=>{if(b.textContent.trim()===(item.k?(item.kind===1?(practice.idx%2===0?item.k[1]:item.k[0]):item.k[0]):item.w?item.w[2]:item.g[0]))b.classList.add("correct")});
+ document.getElementById("nextBtn").style.display="block";
+}
+function nextPractice(){practice.idx++;practice.answered=false;renderPractice()}
+function renderPracticeDone(){document.getElementById("practiceView").innerHTML=`<div class="card" style="text-align:center"><div class="question" style="font-size:44px">完成</div><p>本次答對 <b>${practice.score}</b> / ${practice.items.length}</p>${practice.daily?`<p>今天進度：${state.dailyDone}/20</p>`:""}<button class="primary" onclick="startDaily()">再做一次今日練習</button><button class="secondary" onclick="showView('home')">回首頁</button></div>`;renderHome()}
+function renderWords(){
+ let w=dailyWord();document.getElementById("wordsView").innerHTML=`<div class="tabs"><button class="on">今日</button><button onclick="startPractice('word')">單字測驗</button><button onclick="startPractice('grammar')">文法測驗</button></div><div class="card"><span class="pill">每日單字</span><div class="word-big">${w[1]}</div><div class="reading">${w[0]}</div><div class="meaning">${w[2]}</div><div class="example"><b>${w[3]}</b><br>${w[4]}</div><button class="secondary" onclick="speak('${w[0]}')">🔊 聽單字</button><button class="secondary" onclick="speak('${w[3].replaceAll("'","")}')">🔊 聽例句</button></div><div class="card"><b>今日文法</b><div class="listitem"><b>${grammar[dayIndex()%grammar.length][0]}</b>　${grammar[dayIndex()%grammar.length][1]}<br>${grammar[dayIndex()%grammar.length][2]}<br><span class="note">${grammar[dayIndex()%grammar.length][4]}</span></div></div><div class="card"><b>N5 單字庫</b>${words.slice(0,30).map(w=>`<div class="listitem"><b>${w[1]}</b>　${w[0]}　<span class="note">${w[2]}</span><button class="secondary" onclick="speak('${w[0]}')">🔊</button></div>`).join("")}</div><div class="card"><b>錯題複習</b><p class="note">答錯的題目會保留在這台裝置，之後可重新練習。</p><button class="primary" onclick="reviewWrong()">開始錯題複習（${state.wrong.length}）</button></div><div class="card"><button class="danger" onclick="resetAll()">清除本機學習紀錄</button></div>`}
+function reviewWrong(){if(!state.wrong.length){alert("目前沒有錯題。");return}let items=[];for(let id of state.wrong){let [kind,key]=id.split(":");if(kind==="0"||kind==="1"||kind==="2"){let k=kana.find(x=>x[0]===key);if(k)items.push({kind:+kind,k})}else if(kind==="3"){let w=words.find(x=>x[0]===key);if(w)items.push({kind:3,w})}else{let g=grammar.find(x=>x[0]===key);if(g)items.push({kind:4,g})}}if(!items.length){alert("錯題資料已不存在。");return}practice={type:"review",idx:0,score:0,answered:false,items};showView("practiceView");renderPractice()}
+function resetAll(){if(confirm("確定要清除所有學習紀錄嗎？")){localStorage.removeItem(key);location.reload()}}
+function showView(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("on",b.dataset.view===id));if(id==="home")renderHome();if(id==="kanaView")renderKana();if(id==="wordsView")renderWords();if(id==="practiceView"&&!practice.items.length)startDaily()}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>showView(b.dataset.view));
+renderHome();renderKana();renderWords();
+
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
 </script>
 </body>
 </html>
